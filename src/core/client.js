@@ -2,6 +2,7 @@ import terrainTileset from '../assets/tiles/terrain.png';
 import objectsTileset from '../assets/tiles/objects.png';
 
 import npcImage from '../assets/graphics/actors/npcs.png';
+import monsterImage from '../assets/graphics/actors/monsters.png';
 import playerImage from '../assets/graphics/actors/players/human.png';
 import weaponsImage from '../assets/graphics/items/weapons.png';
 import armorImage from '../assets/graphics/items/armor.png';
@@ -28,6 +29,7 @@ class Client {
     this.players = [];
     this.droppedItems = data.droppedItems;
     this.npcs = data.npcs;
+    this.monsters = data.monsters; // this is undefined
 
     // Tell client to draw mouse on canvas
     bus.$on('DRAW:MOUSE', ({ x, y }) => this.map.setMouseCoordinates(x, y));
@@ -44,6 +46,7 @@ class Client {
         droppedItems: this.droppedItems,
         map: this.map,
         npcs: this.npcs,
+        monsters: this.monsters,
         player: this.player,
       };
 
@@ -83,6 +86,7 @@ class Client {
     const assets = [
       playerImage,
       npcImage,
+      monsterImage,
       objectsTileset,
       terrainTileset,
       weaponsImage,

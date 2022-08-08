@@ -4,7 +4,8 @@ import Authentication from '@server/player/authentication';
 import Handler from '@server/player/handler';
 import Item from '@server/core/item';
 import Map from '@server/core/map';
-import NPC from '@server/core/npc';
+import NPC from '@server/core/actors/npc';
+import Monster from '@server/core/actors/monster';
 import Socket from '@server/socket';
 import emoji from 'node-emoji';
 import uuid from 'uuid/v4';
@@ -36,6 +37,7 @@ class Delaford {
    */
   loadEntities() {
     NPC.load(this);
+    Monster.load(this);
   }
 
   /**

@@ -89,8 +89,13 @@ class Engine {
     // Draw dropped items
     this.game.map.drawItems();
 
+    // Draw NPCs and Monsters
+    this.game.map.drawActors();
     // Draw the NPCs
-    this.game.map.drawNPCs();
+    // this.game.map.drawNPCs();
+
+    // Draw the Monsters
+    // this.game.map.drawMonsters();
 
     // Draw other players
     this.game.map.drawPlayers();

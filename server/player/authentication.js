@@ -105,6 +105,7 @@ class Authentication {
       player,
       map: world.map,
       npcs: world.npcs,
+      monsters: world.monsters,
       droppedItems: world.items,
     };
 

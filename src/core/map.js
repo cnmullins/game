@@ -1,6 +1,7 @@
 import PF from 'pathfinding';
 import UI from 'shared/ui';
 import config from 'root/config';
+import Query from '@server/core/data/query';
 import blockedMouse from '@/assets/graphics/ui/mouse/blocked.png';
 import bus from './utilities/bus';
 import moveToMouse from '@/assets/graphics/ui/mouse/moveTo.png';
@@ -12,6 +13,7 @@ class Map {
 
     this.images = [];
     this.npcs = [];
+    this.monsters = [];
     this.config = config;
 
     this.droppedItems = [];
@@ -49,7 +51,7 @@ class Map {
     // Setup map
     this.setImages(images);
     this.setPlayer(data.player);
-    this.setNPCs(data.npcs);
+    this.setActors(data.npcs, data.monsters);
     this.setDroppedItems(data.droppedItems);
   }
 
@@ -63,12 +65,14 @@ class Map {
   }
 
   /**
-   * The NPCs of the map
+   * The Actors (NPCs and Monsters) of the map.
    *
-   * @param {object} npcs The world NPCS
+   * @param {object} npcs The world NPCs
+   * @param {object} monsters The world Monsters
    */
-  setNPCs(npcs) {
+  setActors(npcs, monsters) {
     this.npcs = npcs;
+    this.monsters = monsters;
   }
 
   /**
@@ -88,12 +92,13 @@ class Map {
   setImages(images) {
     // Define images
     // eslint-disable-next-line
-    const [playerImage, npcsImage, objectImage, terrainImage, weaponsImage, armorImage, jewelryImage, generalImage] = images;
+    const [playerImage, npcsImage, monstersImage, objectImage, terrainImage, weaponsImage, armorImage, jewelryImage, generalImage] = images;
 
     // Image and data
     this.images = {
       playerImage,
       npcsImage,
+      monstersImage,
       objectImage,
       terrainImage,
       weaponsImage,
@@ -250,7 +255,7 @@ class Map {
         y: Math.floor(this.config.map.viewport.y / 2) - (this.player.y - item.y),
       };
 
-      // Get item information and get proper quantity index for graphic
+      // Get item information and get proper quantity index for graphics
       const info = UI.getItemData(item.id);
       let qtyIndex = 0;
       if (item.qty > 1 && info.graphics.quantityLevel) {
@@ -260,24 +265,9 @@ class Map {
         }
       }
 
-      // Get the correct tileset to draw upon
-      const itemTileset = () => {
-        switch (info.graphics.tileset) {
-        case 'general':
-          return this.images.generalImage;
-        case 'jewelry':
-          return this.images.jewelryImage;
-        case 'armor':
-          return this.images.armorImage;
-        default:
-        case 'weapons':
-          return this.images.weaponsImage;
-        }
-      };
-
       // Paint the item on map
       this.context.drawImage(
-        itemTileset(),
+        this.getTileset(info.graphics.tileset),
         ((info.graphics.column + qtyIndex) * 32), // Number in Item tileset
         (info.graphics.row * 32), // Y-axis of tileset
         32,
@@ -340,30 +330,31 @@ class Map {
   }
 
   /**
-   * Draw the NPCs on the game viewport canvas
+   * Draw all Actors on the game viewport canvas
    */
-  drawNPCs() {
-    // Filter out NPCs in viewport
-    const nearbyNPCs = this.npcs.filter((npc) => {
-      const foundNPCs = (this.player.x <= (8 + npc.x))
-        && (this.player.x >= (npc.x - 8))
-        && (this.player.y <= (6 + npc.y))
-        && (this.player.y >= (npc.y - 6));
+  drawActors() {
+    // Filter out Actors in viewport
+    const nearbyActors = [...this.monsters, ...this.npcs].filter((actor) => {
+      const foundActor = (this.player.x <= (8 + actor.x))
+        && (this.player.x >= (actor.x - 8))
+        && (this.player.y <= (6 + actor.y))
+        && (this.player.y >= (actor.y - 6));
 
-      return foundNPCs;
+      return foundActor;
     });
 
     // Get relative X,Y coordinates to paint on viewport
-    nearbyNPCs.forEach((npc) => {
+    nearbyActors.forEach((actor) => {
       const viewport = {
-        x: Math.floor(this.config.map.viewport.x / 2) - (this.player.x - npc.x),
-        y: Math.floor(this.config.map.viewport.y / 2) - (this.player.y - npc.y),
+        x: Math.floor(this.config.map.viewport.x / 2) - (this.player.x - actor.x),
+        y: Math.floor(this.config.map.viewport.y / 2) - (this.player.y - actor.y),
       };
+      const info = Query.getActorData(actor.id, actor.name);
 
-      // Paint the NPC on map
+      // Paint the actor on map
       this.context.drawImage(
-        this.images.npcsImage,
-        (npc.column * 32), // Number in NPC tileset
+        this.getTileset(info.graphics.tileset),
+        (actor.column * 32), // Number in Actor tileset
         0, // Y-axis always 0
         32,
         32,
@@ -429,6 +420,30 @@ class Map {
    */
   drawMouse() {
     this.context.drawImage(this.mouse.selection, (this.mouse.x * 32), (this.mouse.y * 32), 32, 32);
+  }
+
+  /**
+   * Function to return the appropriate tileset
+   *
+   * @param {string} name Tileset name
+   * @return {image}
+   */
+  getTileset(name) {
+    switch (name) {
+    case 'monsters':
+      return this.images.monstersImage;
+    case 'npcs':
+      return this.images.npcsImage;
+    case 'general':
+      return this.images.generalImage;
+    case 'jewelry':
+      return this.images.jewelryImage;
+    case 'armor':
+      return this.images.armorImage;
+    default:
+    case 'weapons':
+      return this.images.weaponsImage;
+    }
   }
 }
 

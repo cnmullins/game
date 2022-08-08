@@ -24,18 +24,18 @@ class UI {
    * @return {string}
    */
   static getContextSubjectColor(data) {
-    // TODO
-    // Turn this into a switch statement
-    if (data === 'npc') {
+    switch (data) {
+    case 'npc':
       return map.color.npc;
-    }
-    if (data === 'item') {
+    case 'item':
       return map.color.item;
-    }
-    if (data === 'action') {
+    case 'action':
       return map.color.action;
+    case 'monster':
+      return map.color.monster;
+    default:
+      return 'inherit';
     }
-    return 'inherit';
   }
 
   /**

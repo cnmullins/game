@@ -3,7 +3,8 @@ module.exports = [
     id: 1,
     name: 'Baynard',
     examine: 'Local town bum. Phew!',
-    graphic: {
+    graphics: {
+      tileset: 'npcs',
       row: 0,
       column: 0,
     },
@@ -20,7 +21,8 @@ module.exports = [
     id: 2,
     name: 'Shop keeper',
     examine: 'Sells and buys items in exchange for coins.',
-    graphic: {
+    graphics: {
+      tileset: 'npcs',
       row: 0,
       column: 1,
     },
@@ -38,7 +40,8 @@ module.exports = [
     id: 3,
     name: 'Ludovicus',
     examine: 'Woodhurst\'s cheerful town shopkeeper.',
-    graphic: {
+    graphics: {
+      tileset: 'npcs',
       row: 0,
       column: 2,
     },
@@ -56,7 +59,8 @@ module.exports = [
     id: 4,
     name: 'Bank gnome',
     examine: 'Helps with your finances and assets, I believe.',
-    graphic: {
+    graphics: {
+      tileset: 'npcs',
       row: 0,
       column: 3,
     },
